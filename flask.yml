@@ -40,10 +40,16 @@
   - name: Install Flask in the virtualenv
     pip: name=flask virtualenv="{{ PROJECT_HOME }}/venv" # virtualenv_site_packages=yes
 
-  - name: Kill website if it's already running
-    action: command sh -c "kill  $(lsof -t -i:{{PORT}})"
-    ignore_errors: yes
+  - name: Get process id running the webserver
+    shell: lsof -t -i:{{PORT}}
     sudo: yes
+    ignore_errors: yes
+    register: pid
+
+  - name: Kill website if it's already running
+    shell: kill {{pid.stdout}}
+    when: pid.stdout != ""
+
 
   - name: Launch flask website via virtualenv
     shell: "source {{ PROJECT_HOME }}/venv/bin/activate; nohup python {{PROJECT_HOME}}/{{MAIN_PY}} {{PORT}} 2>&1 >/dev/null &"
