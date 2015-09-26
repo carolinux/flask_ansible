@@ -46,7 +46,7 @@
 
   - name: Launch flask website via virtualenv
     action: > 
-       command sh -c "source {{ PROJECT_HOME }}/venv/bin/activate; nohup python {{PROJECT_HOME}}/{{MAIN_PY}} 2>&1 >/dev/null &"
+       command sh -c "source {{ PROJECT_HOME }}/venv/bin/activate; nohup python {{PROJECT_HOME}}/{{MAIN_PY}} {{PORT}} 2>&1 >/dev/null &"
 
   - name: Wait for website port to become available
     wait_for: port={{PORT}} delay=1
