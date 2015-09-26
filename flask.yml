@@ -37,7 +37,8 @@
     shell: virtualenv "{{ PROJECT_HOME }}/venv"
            creates="{{ PROJECT_HOME }}/venv/bin/activate"
 
-  - pip: name=flask virtualenv="{{ PROJECT_HOME }}/venv" # virtualenv_site_packages=yes
+  - name: Install Flask in the virtualenv
+    pip: name=flask virtualenv="{{ PROJECT_HOME }}/venv" # virtualenv_site_packages=yes
 
   - name: Kill website if it's already running
     action: command sh -c "kill  $(lsof -t -i:{{PORT}})"
