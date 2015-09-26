@@ -2,7 +2,7 @@
 - hosts: all
 
   vars:
-    LOCAL_PROJECT_HOME: "/home/carolinux/Projects/hello"
+    LOCAL_PROJECT_HOME: "./hello"
     PROJECT_HOME: "~/hello"
     MAIN_PY: "hello.py"
     PORT: 5000
