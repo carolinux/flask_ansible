@@ -1,0 +1,52 @@
+
+- hosts: all
+
+  vars:
+    LOCAL_PROJECT_HOME: "/home/carolinux/Projects/hello"
+    PROJECT_HOME: "/tmp/my_test_home"
+    MAIN_PY: "hello.py"
+    PORT: 5000
+
+  tasks:
+
+  - name: Create remote directory
+    file: path={{PROJECT_HOME}} state=directory
+
+  - name: Copy project code to website server
+    copy: src={{item}} dest={{PROJECT_HOME}}
+    with_fileglob:
+     - "{{LOCAL_PROJECT_HOME}}/*"
+
+  - name: Install extra packages
+    yum: name=epel-release state=latest
+    sudo: yes
+
+  - name: Install lsof (for better process management)
+    yum: name=lsof state=latest
+    sudo: yes
+
+  - name: Install pip
+    yum: name=python-pip state=latest
+    sudo: yes
+
+  - name: Install virtualenv
+    pip: name=virtualenv
+    sudo: yes
+
+  - name: Create virtualenv for project
+    shell: virtualenv "{{ PROJECT_HOME }}/venv"
+           creates="{{ PROJECT_HOME }}/venv/bin/activate"
+
+  - pip: name=flask virtualenv="{{ PROJECT_HOME }}/venv" # virtualenv_site_packages=yes
+
+  - name: Kill website if it's already running
+    action: command sh -c "kill  $(lsof -t -i:{{PORT}})"
+    ignore_errors: yes
+    sudo: yes
+
+  - name: Launch flask website via virtualenv
+    action: > 
+       command sh -c "source {{ PROJECT_HOME }}/venv/bin/activate; nohup python {{PROJECT_HOME}}/{{MAIN_PY}} 2>&1 >/dev/null &"
+
+  - name: Wait for website port to become available
+    wait_for: port={{PORT}} delay=1
