@@ -160,7 +160,7 @@ We need to create a *hosts.conf* file with the addresses of all the droplets we 
 Then we can launch our ansible script with the following command from our local machine (username is the user you want the webserver to run as):
 
 ```bash
-ansible-playbook flask.yml -i hosts.conf -u username --ask-sudo-password
+ansible-playbook flask.yml -i hosts.conf -u username --ask-sudo-pass
 ```
 
 Ansible needs to create a temporary directory on the remote machine (by default under /tmp/) to keep track of the execution of the current playbook. Make sure this directory can be written to by the chosen user. You can change the default remote temporary directory by editing the file */etc/ansible/ansible.cfg* on your local machine, if you're using a Linux distribution.
